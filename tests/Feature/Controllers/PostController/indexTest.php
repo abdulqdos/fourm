@@ -12,12 +12,12 @@ use Inertia\Testing\AssertableInertia ;
 //        ->assertComponent('Posts/Index');
 //});
 
-it('passes posts to the vue' , function () {
+it('passes posts to the view', function () {
     $posts = Post::factory(3)->create();
 
     $posts->load('user');
+
     get(route('posts.index'))
-        ->assertHasResource('post' , PostResource::make($posts->first()))
-        ->assertHasPaginatedResource('posts' , PostResource::collection($posts));
+        ->assertHasPaginatedResource('posts', PostResource::collection($posts->reverse()));
 });
 

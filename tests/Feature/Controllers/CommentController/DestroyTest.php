@@ -24,7 +24,7 @@ it('can redirect' , function () {
 
     actingAs($comment->user)
         ->delete(route('comments.destroy', $comment))
-        ->assertRedirect(route('posts.show', $comment->post));
+        ->assertRedirect($comment->post->showRoute());
 });
 
 it('prevents deleting a comment posted over an hour ago', function () {
@@ -43,5 +43,5 @@ it('can redirect with the page query parameter' , function () {
 
     actingAs($comment->user)
         ->delete(route('comments.destroy', [ 'comment' => $comment , 'page' => 2]))
-        ->assertRedirect(route('posts.show',['post' => $comment->post , 'page' => 2 ]));
+        ->assertRedirect( $comment->post->showRoute([ 'page' => 2]) );
 });

@@ -28,7 +28,7 @@ it('redirects to the post show page' , function () {
 
     actingAs($comment->user)
         ->put(route('comments.update', $comment) , ['body' => 'new body'])
-        ->assertRedirect(route('posts.show', $comment->post_id));
+        ->assertRedirect($comment->post->showRoute());
 });
 
 it('redirects to the correct page of comments' , function () {
@@ -36,8 +36,9 @@ it('redirects to the correct page of comments' , function () {
 
     actingAs($comment->user)
         ->put(route('comments.update', ['comment' => $comment , 'page' => 2]) , ['body' => 'new body'])
-        ->assertRedirect(route('posts.show', ['post' => $comment->post_id , 'page' => 2 ]));
+        ->assertRedirect($comment->post->showRoute([ 'page' => 2 ]));
 });
+
 it('cannot update comment from another user' , function () {
     $comment = Comment::factory()->create();
 
@@ -59,5 +60,7 @@ it('requires a valid body' , function ($body) {
     1.5,
     str_repeat('a', 2501)
 ]);
+
+
 
 

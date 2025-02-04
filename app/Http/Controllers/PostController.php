@@ -4,22 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\PostResource;
-use App\Models\post;
+use App\Models\Post;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
+
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        ray()->showQueries();
 
         return inertia('Posts/Index', [
-            'post' => PostResource::make(Post::first()), // props
-            'posts' => PostResource::collection(Post::with('user')->paginate()),
-        ]) ;
+            'posts' => PostResource::collection(Post::with('user')->latest()->latest('id')->paginate()),
+        ]);
     }
 
     /**
@@ -27,7 +30,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return inertia('Posts/Create');
     }
 
     /**
@@ -35,14 +38,28 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'title' => ['required', 'string', 'min:10', 'max:120'],
+            'body' => ['required', 'string', 'min:100', 'max:10000'],
+        ]);
+
+        $post = Post::create([
+            ...$data,
+            'user_id' => $request->user()->id,
+        ]);
+
+        return redirect($post->showRoute());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show(Request $request, Post $post)
     {
+        if (! Str::contains($post->showRoute(), $request->path())) {
+            return redirect($post->showRoute($request->query()), status: 301);
+        }
+
         $post->load('user');
 
         return inertia('Posts/Show', [
@@ -54,7 +71,7 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Post $post)
     {
         //
     }
@@ -62,7 +79,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Post $post)
     {
         //
     }
@@ -70,7 +87,7 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Post $post)
     {
         //
     }

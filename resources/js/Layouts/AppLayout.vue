@@ -38,6 +38,11 @@ const menu = [
         name: "Posts",
         url: route('posts.index'),
         route: 'posts.index',
+    },
+    {
+        name: "Create a post",
+        url: route('posts.create'),
+        route: 'posts.create'
     }
 ];
 </script>

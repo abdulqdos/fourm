@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
-use App\Models\post;
+use App\Models\Post;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
     use AuthorizesRequests;
+
 
     /**
      * Store a newly created resource in storage.
@@ -24,8 +25,8 @@ class CommentController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        return to_route('posts.show', $post)
-            ->banner('Your comment has been posted.');
+        return redirect($post->showRoute())
+            ->banner('Comment added.');
     }
 
     /**
@@ -35,21 +36,23 @@ class CommentController extends Controller
     {
         $this->authorize('update', $comment);
 
-        $data = $request->validate(['body' => ['required', 'string', 'max:2500'] ]);
+        $data = $request->validate(['body' => ['required', 'string', 'max:2500']]);
 
         $comment->update($data);
 
-        return to_route('posts.show', [ 'post' => $comment->post_id , 'page' => $request->query('page') ]);
+        return redirect($comment->post->showRoute(['page' => $request->query('page')]))
+            ->banner('Comment updated.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment , Request $request)
+    public function destroy(Request $request, Comment $comment)
     {
-       $this->authorize('delete', $comment);
+        $this->authorize('delete', $comment);
         $comment->delete();
-        return to_route('posts.show', [ 'post' => $comment->post_id , 'page' => $request->query('page') ])
-            ->dangerBanner('Your comment has been deleted.' );
+
+        return redirect($comment->post->showRoute(['page' => $request->query('page')]))
+            ->banner('Comment deleted.');
     }
 }
