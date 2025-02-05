@@ -3,15 +3,15 @@
         <div class="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
             <img :src="comment.user.profile_photo_url" class="h-10 w-10 rounded-full" />
         </div>
-        <div>
-            <p class="mt-1 break-all">{{ comment.body }}</p>
+        <div class="flex-1">
+            <div class="mt-1 prose prose-sm max-w-none" v-html="comment.html"></div>
             <span class="first-letter:uppercase block pt-1 text-xs text-gray-600">By {{ comment.user.name }} {{ relativeDate(comment.created_at) }} ago</span>
-            <div class="mt-1 flex flex-row justify-end items-center gap-4">
-                <form  @submit.prevent="$emit('delete' , comment.id)" v-if="comment.can?.delete" class="empty:hidden flex flex-row justify-end items-center gap-4">
-                    <button class="font-mono bg-red-600 hover:bg-red-700 transition duration-300 cursor-pointer text-white px-3 py-1 rounded-md">Delete</button>
+            <div class="mt-2 flex justify-end space-x-3 empty:hidden">
+                <form v-if="comment.can?.update" @submit.prevent="$emit('edit', comment.id)">
+                    <button class="font-mono text-xs hover:font-semibold">Edit</button>
                 </form>
-                <form  @submit.prevent="$emit('edit' , comment.id)" v-if="comment.can?.update" class="empty:hidden flex flex-row justify-end items-center gap-4">
-                    <button class="font-mono bg-blue-600 hover:bg-blue-700 transition duration-300 cursor-pointer text-white px-3 py-1 rounded-md">Edit</button>
+                <form v-if="comment.can?.delete" @submit.prevent="$emit('delete', comment.id)">
+                    <button class="font-mono text-red-700 text-xs hover:font-semibold">Delete</button>
                 </form>
             </div>
         </div>
@@ -21,9 +21,9 @@
 <script setup>
 import {relativeDate} from "@/Utilities/date.js";
 import {router, usePage} from "@inertiajs/vue3";
-// import {computed} from "vue";
+import {computed} from "vue";
 
 const props = defineProps(['comment']);
-const emit = defineEmits(['delete' , 'edit']);
 
+const emit = defineEmits(['edit', 'delete']);
 </script>
