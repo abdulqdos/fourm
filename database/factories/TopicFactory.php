@@ -17,7 +17,9 @@ class TopicFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'slug' => fake()->unique()->slug,
+            'name' => fake()->name,
+            'description' => str(fake()->sentence)->beforeLast('.')->title(),
         ];
     }
 }

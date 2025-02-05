@@ -50,6 +50,7 @@ class CommentController extends Controller
     public function destroy(Request $request, Comment $comment)
     {
         $this->authorize('delete', $comment);
+
         $comment->delete();
 
         return redirect($comment->post->showRoute(['page' => $request->query('page')]))
