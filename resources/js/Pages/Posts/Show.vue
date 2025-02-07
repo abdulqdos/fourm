@@ -1,11 +1,19 @@
 <template>
+    <Head>
+        <link rel="canonical" :href="post.routes.show">
+    </Head>
+
     <AppLayout :title="post.title">
         <Container>
             <Pill :href="route('posts.index', {topic: post.topic.slug})">{{ post.topic.name }}</Pill>
             <PageHeading class="mt-2">{{ post.title }}</PageHeading>
             <span class="mt-1 block text-sm text-gray-600"
-            >{{ formattedDate }} ago by {{ post.user.name }}</span
+            >{{ formattedDate }} By {{ post.user.name }}</span
             >
+
+            <div class="mt-4">
+               <span class="text-pink-500 font-bold selection:bg-pink-500 selection:text-white"> {{ post.likes_count }} Likes</span>
+            </div>
 
             <article
                 class="prose prose-sm mt-6 max-w-none"
@@ -34,7 +42,7 @@
                             id="body"
                             v-model="commentForm.body"
                             placeholder="Speak your mind Spock…"
-                            editorClass="min-h-[160px]"
+                            editorClass="!min-h-[160px]"
                         />
                         <InputError
                             :message="commentForm.errors.body"
@@ -91,7 +99,7 @@ import Comment from "@/Components/Comment.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { router, useForm } from "@inertiajs/vue3";
+import { router, useForm , Head} from "@inertiajs/vue3";
 import TextArea from "@/Components/TextArea.vue";
 import InputError from "@/Components/InputError.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
@@ -165,7 +173,7 @@ const deleteComment = async (commentId) => {
     router.delete(
         route("comments.destroy", {
             comment: commentId,
-            page: props.comments.meta.current_page,
+            page: props.comments.data.length > 1 ? props.comments.meta.current_page : props.comments.meta.current_page - 1,
         }),
         {
             preserveScroll: true,

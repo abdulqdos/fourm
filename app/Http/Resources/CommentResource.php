@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Number;
 
 class CommentResource extends JsonResource
 {
@@ -20,6 +21,7 @@ class CommentResource extends JsonResource
             'post' => $this->whenLoaded('post', fn () => PostResource::make($this->post)),
             'body' => $this->body,
             'html' => $this->html,
+            'likes_count' => Number::abbreviate($this->likes_count),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,
             'can' => [
